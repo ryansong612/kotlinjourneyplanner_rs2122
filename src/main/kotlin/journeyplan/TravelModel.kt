@@ -26,6 +26,12 @@ val nottingHillGate = Station("Notting Hill Gate")
 val highStreetKensington = Station("High Street Kensington")
 val gloucesterRoad = Station("Gloucester Road")
 val southKensington = Station("South Kensington")
+val edgwareRoad = Station("Edgware Road")
+val bayswater = Station("Bayswater")
+val earlsCourt = Station("Earl's Court")
+val westBrompton = Station("West Brompton")
+
 
 val central = Line("Central")
 val circle = Line("Circle")
+val district = Line("Distict")
