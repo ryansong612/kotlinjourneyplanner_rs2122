@@ -1,47 +1,69 @@
 package journeyplan
 
 // Add your code for the route planner in this file.
-
 class SubwayMap(private val sMap: List<Segment>) {
-  fun routesFrom(origin: Station,
-                 destination: Station,
-                 optimisingFor: (Route) -> Int = Route::duration): List<Route> {
+  fun routesFrom(
+    origin: Station,
+    destination: Station,
+    optimisingFor: (Route) -> Int = Route::duration
+  ): List<Route> {
+
+    val optimizers = listOf(Route::duration, Route::numChanges)
+    if (optimizers.contains(optimisingFor).not()) {
+      throw IllegalArgumentException("Invalid Optimising Option")
+    }
+
     val visited: MutableList<Station> = mutableListOf()
-    val final: MutableList<Route> = mutableListOf()
+    val finalR: MutableList<Route> = mutableListOf()
     val route = mutableListOf<Segment>()
 
     fun routeMaker(current: Station) {
-
+      // need to check for line, segments with same from but diff line will get added
       if (current != destination) {
         visited.add(current)
       }
 
       val unvisited = sMap.filter { it.from == current }
         .filter { it.to !in visited }
+        .filter { it.line.state == "Normal" }
 
-      if (unvisited.isEmpty()) {
-        final.add(Route(route.toMutableList()))
-        route.removeLast()
-      }
+//      if (unvisited.isEmpty()) {
+//        finalR.add(Route(route.toMutableList()))
+//        route.removeLast()
+//      }
 
       for (segment in unvisited) {
         route.add(segment)
         if (segment.to != destination) {
           routeMaker(segment.to)
         } else {
-          final.add(Route(route.toMutableList()))
-          route.clear()
+          finalR.add(Route(route.toMutableList()))
         }
+        route.remove(segment)
       }
+
+      visited.remove(current)
     }
 
     return if (origin == destination) {
       emptyList()
     } else {
       routeMaker(origin)
-      final.filter { it.segments.last().to == destination }
+      val finalMap = finalR
         .sortedBy { optimisingFor.invoke(it) }
+        .filter { r -> canChange(r) }
+      // cannot find multi path if second path uses visited station
+      finalMap
     }
+  }
+
+  fun canChange(route: Route): Boolean {
+    val segs = route.segments
+    for (i in (0..segs.size - 2)) {
+      if (segs[i].line != segs[i + 1].line && segs[i].to.state == "Closed")
+        return false
+    }
+    return true
   }
 
   override fun toString(): String {
@@ -76,7 +98,7 @@ class Route(val segments: List<Segment>) {
       "${segments.first().from} to ${segments.last().to} - $d minutes, $c changes"
     val segs = segments.toMutableList()
     println(segs)
-    while (segs.size > 1) {
+    while (segs.size > 0) {
       val first = segs.first()
       segs.remove(first)
       val desL = segs.takeWhile { s -> s.line == first.line }
@@ -87,11 +109,11 @@ class Route(val segments: List<Segment>) {
         "\n - ${first.from} to ${first.to} by ${first.line}"
       }
     }
-    return str
+    return "$str\n"
   }
 }
 
-fun londonUnderground(): SubwayMap =
+fun londonUnderground1(): SubwayMap =
   SubwayMap(
     listOf(
       Segment(northActon, eastActon, central, 2),
@@ -126,4 +148,42 @@ fun londonUnderground(): SubwayMap =
   )
 
 fun main() {
+  val piccadillyLine = Line("Piccadilly")
+  val victoriaLine = Line("Victoria")
+  val districtLine = Line("District")
+
+  val southKensington = Station("South Kensington")
+  val knightsbridge = Station("Knightsbridge")
+  val hydeParkCorner = Station("Hyde Park Corner")
+  val greenPark = Station("Green Park")
+  val oxfordCircus = Station("Oxford Circus")
+  val victoria = Station("Victoria")
+  val sloaneSquare = Station("Sloane Square")
+
+  fun londonUnderground(): SubwayMap = SubwayMap(
+    listOf(
+      Segment(southKensington, knightsbridge, piccadillyLine, 3),
+      Segment(knightsbridge, hydeParkCorner, piccadillyLine, 4),
+      Segment(hydeParkCorner, greenPark, piccadillyLine, 2),
+      Segment(greenPark, oxfordCircus, victoriaLine, 1),
+      Segment(greenPark, victoria, victoriaLine, 1),
+      Segment(victoria, greenPark, victoriaLine, 1),
+      Segment(victoria, sloaneSquare, districtLine, 6),
+      Segment(sloaneSquare, southKensington, districtLine, 3),
+      Segment(southKensington, sloaneSquare, districtLine, 6),
+      Segment(sloaneSquare, victoria, districtLine, 6),
+      Segment(oxfordCircus, greenPark, victoriaLine, 1),
+      Segment(knightsbridge, southKensington, piccadillyLine, 3),
+      Segment(hydeParkCorner, knightsbridge, piccadillyLine, 4)
+    )
+  )
+  // south ken -> sloane -> victoria via district
+  // south ken -> greenpark via pic then greenpark -> vic via victoria //can detect multiroute
+  // south ken -> sloane -> victoria, victoria -> greenPark -> Oxf
+
+  val map = londonUnderground()
+
+  var routes = map.routesFrom(southKensington, oxfordCircus)
+
+  println(routes)
 }

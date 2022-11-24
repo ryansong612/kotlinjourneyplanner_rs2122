@@ -1,11 +1,24 @@
 package journeyplan
 
 // Add your code for modelling public transport networks in this file.
-class Station (val name: String) {
+class Station (val name: String, var state: String = "Open") {
+  fun close() {
+    state = "Closed"
+  }
+  fun open() {
+    state = "Open"
+  }
   override fun toString(): String = name
 }
 
-class Line (val name: String) {
+class Line (val name: String, var state: String = "Normal") {
+  fun suspend() {
+    state = "Suspended"
+  }
+  fun resume() {
+    state = "Normal"
+  }
+
   override fun toString(): String = "$name Line"
 }
 
@@ -14,7 +27,7 @@ class Segment (val from: Station,
                val line: Line,
                val time: Int) {
   override fun toString() =
-    "From: $from, To: $to, via $line using $time minutes"
+    "From: $from, To: $to, via $line using $time minutes\n"
 }
 
 val northActon = Station("North Acton")

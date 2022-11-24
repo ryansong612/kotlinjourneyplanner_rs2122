@@ -2,6 +2,8 @@ package journeyplan
 
  import org.junit.Assert.assertEquals
  import org.junit.Assert.assertTrue
+ import org.junit.Assert.assertNull
+ import org.junit.Assert.assertNotNull
  import org.junit.Test
 
 class ExtensionsTest {
@@ -67,67 +69,67 @@ class ExtensionsTest {
     assertEquals(12, routes[1].duration())
   }
 //
-//  @Test
-//  fun `does not offer routes with suspended lines`() {
+  @Test
+  fun `does not offer routes with suspended lines`() {
+
+    var routes = map.routesFrom(southKensington, victoria)
+
+    assertEquals(2, routes.size)
+    assertTrue(routes[0].segments.all { s -> s.line in setOf(piccadillyLine, victoriaLine) })
+    assertTrue(routes[1].segments.all { s -> s.line == districtLine })
+
+    districtLine.suspend()
+
+    routes = map.routesFrom(southKensington, victoria)
+
+    assertEquals(1, routes.size)
+    assertTrue(routes[0].segments.none { s -> s.line == districtLine })
+
+    districtLine.resume()
+
+    routes = map.routesFrom(southKensington, victoria)
+
+    assertEquals(2, routes.size)
+    assertTrue(routes[0].segments.all { s -> s.line in setOf(piccadillyLine, victoriaLine) })
+    assertTrue(routes[1].segments.all { s -> s.line == districtLine })
+  }
 //
-//    var routes = map.routesFrom(southKensington, victoria)
-//
-//    assertEquals(2, routes.size)
-//    assertTrue(routes[0].segments.all { s -> s.line in setOf(piccadillyLine, victoriaLine) })
-//    assertTrue(routes[1].segments.all { s -> s.line == districtLine })
-//
-//    districtLine.suspend()
-//
-//    routes = map.routesFrom(southKensington, victoria)
-//
-//    assertEquals(1, routes.size)
-//    assertTrue(routes[0].segments.none { s -> s.line == districtLine })
-//
-//    districtLine.resume()
-//
-//    routes = map.routesFrom(southKensington, victoria)
-//
-//    assertEquals(2, routes.size)
-//    assertTrue(routes[0].segments.all { s -> s.line in setOf(piccadillyLine, victoriaLine) })
-//    assertTrue(routes[1].segments.all { s -> s.line == districtLine })
-//  }
-//
-//  @Test
-//  fun `avoids interchange at closed stations`() {
-//
-//    var routes = map.routesFrom(southKensington, oxfordCircus)
-//    assertEquals(2, routes.size)
-//
-//    victoria.close()
-//
-//    routes = map.routesFrom(southKensington, oxfordCircus)
-//
-//    assertEquals(1, routes.size)
-//    assertDoesNotGoVia(victoria, routes[0])
-//  }
-//
-//  @Test
-//  fun `does not avoid closed stations if interchange not required`() {
-//
-//    var routes = map.routesFrom(southKensington, oxfordCircus)
-//    assertEquals(2, routes.size)
-//
-//    sloaneSquare.close()
-//
-//    routes = map.routesFrom(southKensington, oxfordCircus)
-//    assertEquals(2, routes.size)
-//    println(routes)
-//
-//    assertGoesVia(sloaneSquare, routes[1])
-//  }
-//
-//  fun assertGoesVia(station: Station, route: Route) {
-//    assertNotNull(findIn(route, station))
-//  }
-//
-//  fun assertDoesNotGoVia(station: Station, route: Route) {
-//    assertNull(findIn(route, station))
-//  }
-//
-//  fun findIn(route: Route, station: Station) = route.segments.find { s -> s.to == station }
+  @Test
+  fun `avoids interchange at closed stations`() {
+
+    var routes = map.routesFrom(southKensington, oxfordCircus)
+    assertEquals(2, routes.size)
+
+    victoria.close()
+
+    routes = map.routesFrom(southKensington, oxfordCircus)
+
+    assertEquals(1, routes.size)
+    assertDoesNotGoVia(victoria, routes[0])
+  }
+
+  @Test
+  fun `does not avoid closed stations if interchange not required`() {
+
+    var routes = map.routesFrom(southKensington, oxfordCircus)
+    assertEquals(2, routes.size)
+
+    sloaneSquare.close()
+
+    routes = map.routesFrom(southKensington, oxfordCircus)
+    assertEquals(2, routes.size)
+    println(routes)
+
+    assertGoesVia(sloaneSquare, routes[1])
+  }
+
+  fun assertGoesVia(station: Station, route: Route) {
+    assertNotNull(findIn(route, station))
+  }
+
+  fun assertDoesNotGoVia(station: Station, route: Route) {
+    assertNull(findIn(route, station))
+  }
+
+  fun findIn(route: Route, station: Station) = route.segments.find { s -> s.to == station }
 }
