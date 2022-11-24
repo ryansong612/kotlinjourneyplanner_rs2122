@@ -107,7 +107,7 @@ class Route(val segments: List<Segment>) {
   }
 }
 
-fun londonUnderground1(): SubwayMap =
+fun londonUnderground(): SubwayMap =
   SubwayMap(
     listOf(
       Segment(northActon, eastActon, central, 2),
