@@ -1,7 +1,7 @@
 package journeyplan
 
 // Add your code for the route planner in this file.
-class SubwayMap(private val sMap: List<Segment>) {
+class SubwayMap(val sMap: List<Segment>) {
   fun routesFrom(
     origin: Station,
     destination: Station,
@@ -51,7 +51,7 @@ class SubwayMap(private val sMap: List<Segment>) {
     }
   }
 
-  fun canChange(route: Route): Boolean {
+  private fun canChange(route: Route): Boolean {
     val segs = route.segments
     for (i in (0..segs.size - 2)) {
       if (segs[i].line != segs[i + 1].line && segs[i].to.state == "Closed")
