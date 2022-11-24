@@ -23,14 +23,10 @@ class SubwayMap(private val sMap: List<Segment>) {
         visited.add(current)
       }
 
-      val unvisited = sMap.filter { it.from == current }
+      val unvisited = sMap
+        .filter { it.from == current }
         .filter { it.to !in visited }
         .filter { it.line.state == "Normal" }
-
-//      if (unvisited.isEmpty()) {
-//        finalR.add(Route(route.toMutableList()))
-//        route.removeLast()
-//      }
 
       for (segment in unvisited) {
         route.add(segment)
@@ -49,11 +45,9 @@ class SubwayMap(private val sMap: List<Segment>) {
       emptyList()
     } else {
       routeMaker(origin)
-      val finalMap = finalR
+      finalR
         .sortedBy { optimisingFor.invoke(it) }
         .filter { r -> canChange(r) }
-      // cannot find multi path if second path uses visited station
-      finalMap
     }
   }
 
@@ -109,7 +103,7 @@ class Route(val segments: List<Segment>) {
         "\n - ${first.from} to ${first.to} by ${first.line}"
       }
     }
-    return "$str"
+    return str
   }
 }
 
@@ -146,44 +140,3 @@ fun londonUnderground1(): SubwayMap =
       Segment(westBrompton, earlsCourt, district, 4)
     )
   )
-
-fun main() {
-  val piccadillyLine = Line("Piccadilly")
-  val victoriaLine = Line("Victoria")
-  val districtLine = Line("District")
-
-  val southKensington = Station("South Kensington")
-  val knightsbridge = Station("Knightsbridge")
-  val hydeParkCorner = Station("Hyde Park Corner")
-  val greenPark = Station("Green Park")
-  val oxfordCircus = Station("Oxford Circus")
-  val victoria = Station("Victoria")
-  val sloaneSquare = Station("Sloane Square")
-
-  fun londonUnderground(): SubwayMap = SubwayMap(
-    listOf(
-      Segment(southKensington, knightsbridge, piccadillyLine, 3),
-      Segment(knightsbridge, hydeParkCorner, piccadillyLine, 4),
-      Segment(hydeParkCorner, greenPark, piccadillyLine, 2),
-      Segment(greenPark, oxfordCircus, victoriaLine, 1),
-      Segment(greenPark, victoria, victoriaLine, 1),
-      Segment(victoria, greenPark, victoriaLine, 1),
-      Segment(victoria, sloaneSquare, districtLine, 6),
-      Segment(sloaneSquare, southKensington, districtLine, 3),
-      Segment(southKensington, sloaneSquare, districtLine, 6),
-      Segment(sloaneSquare, victoria, districtLine, 6),
-      Segment(oxfordCircus, greenPark, victoriaLine, 1),
-      Segment(knightsbridge, southKensington, piccadillyLine, 3),
-      Segment(hydeParkCorner, knightsbridge, piccadillyLine, 4)
-    )
-  )
-  // south ken -> sloane -> victoria via district
-  // south ken -> greenpark via pic then greenpark -> vic via victoria //can detect multiroute
-  // south ken -> sloane -> victoria, victoria -> greenPark -> Oxf
-
-  val map = londonUnderground()
-
-  var routes = map.routesFrom(southKensington, oxfordCircus)
-
-  println(routes)
-}
