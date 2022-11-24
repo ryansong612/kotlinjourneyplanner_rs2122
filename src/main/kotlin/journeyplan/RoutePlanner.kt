@@ -109,7 +109,7 @@ class Route(val segments: List<Segment>) {
         "\n - ${first.from} to ${first.to} by ${first.line}"
       }
     }
-    return "$str\n"
+    return "$str"
   }
 }
 

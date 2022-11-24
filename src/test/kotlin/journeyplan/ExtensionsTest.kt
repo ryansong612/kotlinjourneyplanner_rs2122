@@ -1,10 +1,10 @@
 package journeyplan
 
- import org.junit.Assert.assertEquals
- import org.junit.Assert.assertTrue
- import org.junit.Assert.assertNull
- import org.junit.Assert.assertNotNull
- import org.junit.Test
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
 
 class ExtensionsTest {
 
@@ -48,7 +48,7 @@ class ExtensionsTest {
     assertTrue(routes[0].segments.all { s -> s.line in setOf(piccadillyLine, victoriaLine) })
     assertTrue(routes[1].segments.all { s -> s.line == districtLine })
   }
-//
+
   @Test
   fun `can optimise for number of changes`() {
 
@@ -58,7 +58,7 @@ class ExtensionsTest {
     assertEquals(0, routes[0].numChanges())
     assertEquals(1, routes[1].numChanges())
   }
-//
+
   @Test
   fun `can optimise for duration`() {
 
@@ -68,7 +68,7 @@ class ExtensionsTest {
     assertEquals(10, routes[0].duration())
     assertEquals(12, routes[1].duration())
   }
-//
+
   @Test
   fun `does not offer routes with suspended lines`() {
 
@@ -93,7 +93,7 @@ class ExtensionsTest {
     assertTrue(routes[0].segments.all { s -> s.line in setOf(piccadillyLine, victoriaLine) })
     assertTrue(routes[1].segments.all { s -> s.line == districtLine })
   }
-//
+
   @Test
   fun `avoids interchange at closed stations`() {
 
