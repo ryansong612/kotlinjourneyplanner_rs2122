@@ -18,7 +18,6 @@ class SubwayMap(val sMap: List<Segment>) {
     val route = mutableListOf<Segment>()
 
     fun routeMaker(current: Station) {
-      // need to check for line, segments with same from but diff line will get added
       if (current != destination) {
         visited.add(current)
       }
@@ -140,3 +139,7 @@ fun londonUnderground(): SubwayMap =
       Segment(westBrompton, earlsCourt, district, 4)
     )
   )
+
+fun main() {
+  println(londonUnderground().routesFrom(edgwareRoad, northActon)[0])
+}
