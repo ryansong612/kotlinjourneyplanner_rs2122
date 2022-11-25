@@ -8,6 +8,8 @@ class TravelModelTest {
   fun `printing stations shows their names`() {
     assertEquals("South Kensington", Station("South Kensington").toString())
     assertEquals("Knightsbridge", Station("Knightsbridge").toString())
+    assertEquals("North Acton", Station("North Acton").toString())
+    assertEquals("East Acton", eastActon.toString())
   }
 
   @Test

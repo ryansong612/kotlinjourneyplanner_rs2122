@@ -90,7 +90,6 @@ class Route(val segments: List<Segment>) {
     var str =
       "${segments.first().from} to ${segments.last().to} - $d minutes, $c changes"
     val segs = segments.toMutableList()
-    println(segs)
     while (segs.size > 0) {
       val first = segs.first()
       segs.remove(first)
